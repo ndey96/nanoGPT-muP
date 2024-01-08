@@ -86,9 +86,6 @@ class MLP(nn.Module):
         self.gelu    = nn.GELU()
         self.c_proj  = nn.Linear(4 * config.n_embd, config.n_embd, bias=config.bias)
         self.dropout = nn.Dropout(config.dropout)
-        if config.mup:
-            # TODO: reinit self.c_fc and self.c_proj so that mup_init_std = config.init_std/sqrt(mup_width_mult)
-            pass
 
     def forward(self, x):
         x = self.c_fc(x)
@@ -149,6 +146,9 @@ class GPT(nn.Module):
         for pn, p in self.named_parameters():
             if pn.endswith('c_proj.weight'):
                 torch.nn.init.normal_(p, mean=0.0, std=0.02/math.sqrt(2 * config.n_layer))
+            if config.mup and pn is one of the hidden layers: # TODO
+                # TODO: reinit QKV, self.c_fc and self.c_proj so that mup_init_std = config.init_std/sqrt(mup_width_mult)
+                p /= sqrt(mup_width_mult)
 
         # report number of parameters
         print("number of parameters: %.2fM" % (self.get_num_params()/1e6,))
