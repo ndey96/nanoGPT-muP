@@ -254,7 +254,11 @@ while True:
     # determine and set the learning rate for this iteration
     lr = get_lr(iter_num) if decay_lr else learning_rate
     for param_group in optimizer.param_groups:
-        param_group['lr'] = lr
+        # TODO
+        if param_group is a hidden weight matrix like Q,K,V,O or FFN:
+            param_group['lr'] = lr / mup_width_mult
+        else:
+            param_group['lr'] = lr
 
     # evaluate the loss on train/val sets and write checkpoints
     if iter_num % eval_interval == 0 and master_process:
